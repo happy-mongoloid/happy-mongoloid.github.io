@@ -38,7 +38,7 @@
 
 			let camera, controls, scene, renderer, stats;
 
-			let mesh, geometry, material, clock;
+			let mesh, geometry,frag,vert,material, clock;
 
 			const worldWidth = 128, worldDepth = 128;
 
@@ -48,59 +48,24 @@
 			function init() {
 
 				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 20000 );
+        var loader = new THREE.FileLoader();
+      loader.load('field.frag',function ( data ) {frag =  data;runMoreIfDone();},);
+      loader.load('field.vert',function ( data ) {vert =  data;runMoreIfDone();},);
+      var numFilesLeft = 2;
+      function runMoreIfDone() {
+     --numFilesLeft;
+     if (numFilesLeft === 0) {
+       more();
+     }
+  }
+  
 
 
-    const frag = /* glsl */ `
-    #ifdef GL_ES
-    precision highp float;
-    precision mediump int;
-    #endif
-      uniform float u_time;
-      
-      varying vec2 vUv;
-      // Let's define PI constant
-      #define pi 3.1415926535
-    float t;
-    
-    float spiral(vec2 m) {
-        float r = length(m);
-        float a = atan(m.y, m.x);
-        float val = 2.;
-        
-        //a=pi/4.;
-    
-        float v = sin(200.*(sqrt(r)-(val/100.)*a - .1*t));
-        return clamp(v,0.0,1.);
-    
-    }
-    
-      void main () {
-       // vUv-=0.5;
-       vec2 p = vUv.xy;
-       p-=.5;
-        t = u_time;
-        vec3 col = vec3(0.0);
-        float d = length(p);
-        float v = spiral(p);
-        
-        col = vec3(v + 0.1);
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `;
-
-
-
+}
+  function more() {
      material = new THREE.ShaderMaterial({
       // We need to pass some information down from the vertex to the fragment shader
-      vertexShader: `
-      varying vec2 vUv;
-      
-
-      void main () {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xyz, 1.0)/12.0;
-      }
-    `,
+      vertexShader: vert,
       // The vertex shader is defined as a GLSL source string
       fragmentShader: frag,
       // The uniforms allow us to send values down into the shader
@@ -108,6 +73,7 @@
         // Here is how we define a float value
         u_time: { value: 0 }
         , u_mouse: {type: "v2", value: new THREE.Vector2()}
+        , u_resolution: {type: "v2", value: new THREE.Vector2()}
       }
     });
 
@@ -118,7 +84,7 @@
 				clock = new THREE.Clock();
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xaaccff );
+				scene.background = new THREE.Color( 0.0,0.0,0.0 );
 				scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
 
 				geometry = new THREE.PlaneGeometry( 20000, 20000, worldWidth - 1, worldDepth - 1 );
@@ -192,6 +158,7 @@
 				const delta = clock.getDelta();
 				const time = clock.getElapsedTime() * 10;
         material.uniforms.u_time.value = time/112.;
+        material.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth, window.innerHeight)};
 				const position = geometry.attributes.position;
 
 				for ( let i = 0; i < position.count; i ++ ) {
