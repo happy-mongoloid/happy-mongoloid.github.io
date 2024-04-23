@@ -30,8 +30,8 @@ void main()
 	uv.x *= u_resolution.x/u_resolution.y;
        float aspectRatio = u_resolution.x / u_resolution.y;
     // Create a grid of crossed lines
-    float lines = step(mod(uv.x, 0.01), lineThickness) +
-                  step(mod(uv.y, 0.01), lineThickness);
+    float lines = step(mod(uv.x, 0.001), lineThickness) +
+                  step(mod(uv.y, 0.001), lineThickness);
     vec2 iMouse = vec2(0.5);
     // Calculate the distance from the mouse
     vec2 mouse = (iMouse - u_resolution.xy) / u_resolution.y;

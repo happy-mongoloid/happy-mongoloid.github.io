@@ -35,7 +35,7 @@
 			import Stats from 'three/addons/libs/stats.module.js';
 			import { OrbitControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/OrbitControls.js';
 			import { FirstPersonControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/FirstPersonControls.js';
-
+			import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 			let camera, controls, scene, renderer, stats;
 
 			let mesh, geometry,frag,vert,material, clock;
@@ -100,7 +100,7 @@
 
 				}
 
-				const texture = new THREE.TextureLoader().load( 'https://threejs.org/examples/textures/water.jpg' );
+				// const texture = new THREE.TextureLoader().load( 'https://threejs.org/examples/textures/water.jpg' );
 				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat.set( 5, 5 );
 				texture.colorSpace = THREE.SRGBColorSpace;
@@ -158,12 +158,15 @@
 				const delta = clock.getDelta();
 				const time = clock.getElapsedTime() * 10;
         material.uniforms.u_time.value = time/112.;
-        material.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth, window.innerHeight)};
+		// let simplex = new SimplexNoise();
+        material.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth*10, window.innerWidth*10)};
 				const position = geometry.attributes.position;
 
 				for ( let i = 0; i < position.count; i ++ ) {
+					var d = 0.0;
 
-					const y = 35 * Math.sin( i / 5 + ( time + i ) / 7 );
+					const y =  105 * Math.sin(  ( (time/12 + i/(1112 )) )  ) ;
+					// const y = 35 * Math.sin( i / 5 + ( time + i ) / 7 ) + 35 * Math.sin( i / 15 - ( time + i/12 ) / 14 );
 					position.setY( i, y );
 
 				}
