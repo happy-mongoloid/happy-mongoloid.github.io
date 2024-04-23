@@ -38,7 +38,7 @@
 			import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 			let camera, controls, scene, renderer, stats;
 
-			let mesh, geometry,frag,vert,material, clock;
+			let mesh, geometry,sphere, frag,sfrag,svert,vert,material,sphereMaterial, clock;
 
 			const worldWidth = 128, worldDepth = 128;
 
@@ -51,7 +51,10 @@
         var loader = new THREE.FileLoader();
       loader.load('field.frag',function ( data ) {frag =  data;runMoreIfDone();},);
       loader.load('field.vert',function ( data ) {vert =  data;runMoreIfDone();},);
-      var numFilesLeft = 2;
+	  loader.load('sphereField.frag',function ( data ) {sfrag =  data;runMoreIfDone();},);
+	  loader.load('sphereField.vert',function ( data ) {svert =  data;runMoreIfDone();},);
+	  
+      var numFilesLeft = 4;
       function runMoreIfDone() {
      --numFilesLeft;
      if (numFilesLeft === 0) {
@@ -64,6 +67,7 @@
 }
   function more() {
      material = new THREE.ShaderMaterial({
+		side: THREE.DoubleSide,
       // We need to pass some information down from the vertex to the fragment shader
       vertexShader: vert,
       // The vertex shader is defined as a GLSL source string
@@ -76,7 +80,20 @@
         , u_resolution: {type: "v2", value: new THREE.Vector2()}
       }
     });
-
+	sphereMaterial = new THREE.ShaderMaterial({
+		side: THREE.DoubleSide,
+      // We need to pass some information down from the vertex to the fragment shader
+      vertexShader: svert,
+      // The vertex shader is defined as a GLSL source string
+      fragmentShader: sfrag,
+      // The uniforms allow us to send values down into the shader
+      uniforms: {
+        // Here is how we define a float value
+        u_time: { value: 0 }
+        , u_mouse: {type: "v2", value: new THREE.Vector2()}
+        , u_resolution: {type: "v2", value: new THREE.Vector2()}
+      }
+    });
 
 
 				camera.position.y = 200;
@@ -86,7 +103,7 @@
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0.0,0.0,0.0 );
 				scene.fog = new THREE.FogExp2( 0xaaccff, 0.0007 );
-
+				sphere = new THREE.SphereGeometry( 4000, 66, 66 );
 				geometry = new THREE.PlaneGeometry( 20000, 20000, worldWidth - 1, worldDepth - 1 );
 				geometry.rotateX( - Math.PI / 2 );
 
@@ -100,16 +117,24 @@
 
 				}
 
-				// const texture = new THREE.TextureLoader().load( 'https://threejs.org/examples/textures/water.jpg' );
+				const texture = new THREE.TextureLoader().load( 'https://threejs.org/examples/textures/water.jpg' );
 				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat.set( 5, 5 );
 				texture.colorSpace = THREE.SRGBColorSpace;
-        
+				
 				// material = new THREE.MeshBasicMaterial( { color: 0x0044ff, map: texture } );
-
+				// sphere.material = material;
+				
+				
+				const meshSph = new THREE.Mesh(sphere,sphereMaterial);
+				// sphere.materialIndex = 2;
+				meshSph.materialIndex = 2;
+				// geometry.materialIndex = 2;
 				mesh = new THREE.Mesh( geometry, material );
+				// mesh.materialIndex = 2;
+				mesh.material = material;
 				scene.add( mesh );
-
+				scene.add( meshSph );
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -157,6 +182,10 @@
       
 				const delta = clock.getDelta();
 				const time = clock.getElapsedTime() * 10;
+		sphereMaterial.uniforms.u_time.value = time/112.;
+		// let simplex = new SimplexNoise();
+        sphereMaterial.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth*10, window.innerWidth*10)};
+
         material.uniforms.u_time.value = time/112.;
 		// let simplex = new SimplexNoise();
         material.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth*10, window.innerWidth*10)};

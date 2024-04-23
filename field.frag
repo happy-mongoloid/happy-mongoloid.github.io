@@ -19,8 +19,8 @@
 
 
 
-const float lineThickness = 0.0001;
-const float neonRadius = 0.;
+const float lineThickness = 0.00001;
+const float neonRadius = 0.1;
 const vec3 neonColor = vec3(1.0, 1.0, 1.0);
 
 void main()
