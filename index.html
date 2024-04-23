@@ -29,9 +29,9 @@
 			import * as THREE from 'three';
 
 			// import Stats from 'three/addons/libs/stats.module.js';
-			import { OrbitControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/OrbitControls.js';
-			import { FirstPersonControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/FirstPersonControls.js';
-			
+			// import { OrbitControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/OrbitControls.js';
+			// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 			let camera, controls, scene, renderer;
 
 			let mesh, geometry,sphere, frag,sfrag,svert,vert,material,sphereMaterial, clock;
@@ -109,6 +109,7 @@
 				for ( let i = 0; i < position.count; i ++ ) {
 
 					const y = 35 * Math.sin( i / 2 );
+					
 					position.setY( i, y );
 
 				}
@@ -191,6 +192,7 @@
 					var d = 0.0;
 
 					const y =  105 * Math.sin(  ( (time/12 + i/(1112 )) )  ) ;
+					 
 					// const y = 35 * Math.sin( i / 5 + ( time + i ) / 7 ) + 35 * Math.sin( i / 15 - ( time + i/12 ) / 14 );
 					pos.setY( i, y );
 
