@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - geometry - dynamic</title>
+		<title>prod v0.0.2</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		
@@ -13,13 +13,20 @@
 		</style>
 	</head>
 	<body>
-
+		<script type="importmap">
+			{
+			  "imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@<version>/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
+			  }
+			}
+		  </script>
 		
 
 	
 		<script type="module">
-			import * as THREE from 'https://unpkg.com/three@0.108.0/build/three.module.js';
-			// import * as THREE from 'three';
+			// import * as THREE from 'https://unpkg.com/three@0.108.0/build/three.module.js';
+			import * as THREE from 'three';
 
 			// import Stats from 'three/addons/libs/stats.module.js';
 			import { OrbitControls } from 'https://unpkg.com/three@0.108.0/examples/jsm/controls/OrbitControls.js';
@@ -178,18 +185,18 @@
         material.uniforms.u_time.value = time/112.;
 		// let simplex = new SimplexNoise();
         material.uniforms.u_resolution = {type: "v2", value: new THREE.Vector2(window.innerWidth*10, window.innerWidth*10)};
-				const position = geometry.attributes.position;
+				const pos = geometry.attributes.position;
 
-				for ( let i = 0; i < position.count; i ++ ) {
+				for ( let i = 0; i < pos.count; i ++ ) {
 					var d = 0.0;
 
 					const y =  105 * Math.sin(  ( (time/12 + i/(1112 )) )  ) ;
 					// const y = 35 * Math.sin( i / 5 + ( time + i ) / 7 ) + 35 * Math.sin( i / 15 - ( time + i/12 ) / 14 );
-					position.setY( i, y );
+					pos.setY( i, y );
 
 				}
 
-				position.needsUpdate = true;
+				pos.needsUpdate = true;
 
 				controls.update( delta );
 				renderer.render( scene, camera );
