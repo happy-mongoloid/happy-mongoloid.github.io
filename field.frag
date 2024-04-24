@@ -18,31 +18,30 @@
 
 
 
+float glow = 0.01;
+float width = 0.0;
+float cellSize = 0.001;
 
-const float lineThickness = 0.00001;
-const float neonRadius = 0.1;
-const vec3 neonColor = vec3(1.0, 1.0, 1.0);
+float grid(vec2 uv)
+{
+  float d = length(uv);
 
+    uv /= cellSize/2.0;
+width += smoothstep(0.0,0.05,d)/3.;
+float dVert = length(fract(uv.x ) - 0.5);
+float dHorz = length(fract(uv.y ) - 0.5);
+float grid = smoothstep(width + glow,width,dVert) + 
+                 smoothstep(width + glow,width,dHorz);
+                   d = smoothstep(0.1,0.0,d);
+                 return grid*d;
+}
 void main()
 {
-   	vec2 uv = fragCoord.xy / u_resolution.xy-0.5;
-    // vec2 uv = gl_FragCoord.xy / u_resolution.xy-0.5;
-	uv.x *= u_resolution.x/u_resolution.y;
-       float aspectRatio = u_resolution.x / u_resolution.y;
-    // Create a grid of crossed lines
-    float lines = step(mod(uv.x, 0.001), lineThickness) +
-                  step(mod(uv.y, 0.001), lineThickness);
-    vec2 iMouse = vec2(0.5);
-    // Calculate the distance from the mouse
-    vec2 mouse = (iMouse - u_resolution.xy) / u_resolution.y;
-    float dist = distance(uv, iMouse.xy / u_resolution.xy * vec2(aspectRatio, 1.0));
-    
-    // Add neon effect when the mouse is near the lines
-    float neon = smoothstep(neonRadius, 0.0, dist);
-    
-    // Mix the neon color with the grid color
-    vec3 color = mix(vec3(0.1), neonColor, neon);
-    
-    // Output the final color
-    gl_FragColor = vec4(color * lines, 1.0);
+
+    vec2 uv = fragCoord.xy / u_resolution.xy-0.5;
+    uv.x *= u_resolution.x/u_resolution.y;
+    float grid = grid(uv);
+    vec3 col = vec3(grid);
+
+    gl_FragColor = vec4(col, 1.0);
 }

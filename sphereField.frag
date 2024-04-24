@@ -105,8 +105,11 @@ float u_t = u_time*112.;
     noiseUV.y += u_t*62.;
     
  vec3 noiseCol = vec3(perlinNoise(noiseUV)*0.4);
-
-noiseCol *= (uv.y + 0.25);
+float uvMask = smoothstep(0.,.5,uv.y + 0.35);
+noiseCol *= uvMask;
 noiseCol *= bwGrain(uv,u_t*112.);
+noiseCol = smoothstep(0.2,0.3 ,noiseCol);
+float sun = pow(uv.y,5.)*34.;
+noiseCol -= smoothstep(0.6,0.7,sun);
 gl_FragColor = vec4(noiseCol,1.0);
 }
