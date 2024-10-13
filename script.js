@@ -115,13 +115,13 @@ function animate() {
 
 function render() {
     const delta = clock.getDelta();
-    time += time / 11112.;
+    time +=  0.1;
     sphereMaterial.uniforms.u_time.value = time / 112.;
     sphereMaterial.uniforms.u_resolution = { type: "v2", value: new THREE.Vector2(window.innerWidth * 10, window.innerWidth * 10) };
     material.uniforms.u_time.value = time / 112.;
     material.uniforms.u_resolution = { type: "v2", value: new THREE.Vector2(window.innerWidth * 10, window.innerWidth * 10) };
     const pos = geometry.attributes.position;
-	var waveSize = time*12.;
+	var waveSize = time/1112.;
 
 	if(waveSize > 1.0) {
 		waveSize = 1.0;
@@ -129,7 +129,7 @@ function render() {
 
     for (let i = 0; i < pos.count; i++) {
         const y = 15 * (Math.sin((time / 12 + i / 512)) )*waveSize;
-        pos.setY(i, y);
+        pos.setY(i, y - 10*waveSize);
     }
 
     pos.needsUpdate = true;
