@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 
 let camera, controls, scene, renderer, audio;
-let mesh, geometry, sphere, time, frag, sfrag, svert, vert, material, sphereMaterial, clock;
+let mesh, geometry, sphere, time,startTime, frag, sfrag, svert, vert, material, sphereMaterial, clock;
 
 const worldWidth = 128, worldDepth = 128;
 
@@ -13,8 +13,11 @@ animate();
 
 function init() {
     time = (0.01);
+    startTime = (0.01);
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
-	camera.rotation.x = -Math.PI / 2;
+    camera.rotation.y =  - 0.025;
+	camera.rotation.x = -Math.PI / 2.1 - 0.1;
+    
     const audioLoader = new THREE.AudioLoader();
     var loader = new THREE.FileLoader();
     const listener = new THREE.AudioListener();
@@ -49,7 +52,8 @@ function more() {
         vertexShader: vert,
         fragmentShader: frag,
         uniforms: {
-            u_time: { value: 0 },
+            u_time: { value: 0.0 },
+            u_startTime: { value: 0.0 },
             u_mouse: { type: "v2", value: new THREE.Vector2() },
             u_resolution: { type: "v2", value: new THREE.Vector2() }
         }
@@ -60,12 +64,14 @@ function more() {
         fragmentShader: sfrag,
         uniforms: {
             u_time: { value: 0 },
+          
             u_mouse: { type: "v2", value: new THREE.Vector2() },
-            u_resolution: { type: "v2", value: new THREE.Vector2() }
+            u_resolution: { type: "v2", value: new THREE.Vector2() },
+			u_scale: { type: "f", value: 0.0 }
         }
     });
 
-    camera.position.y = 10;
+    camera.position.y = 2;
     clock = new THREE.Clock();
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0.0, 0.0, 0.0);
@@ -76,7 +82,7 @@ function more() {
 
     const position = geometry.attributes.position;
     position.usage = THREE.DynamicDrawUsage;
-    camera.rotateX = 3.14;
+    // camera.rotateX = Math.PI  + 0.6;
 
     const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/water.jpg');
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -115,20 +121,43 @@ function animate() {
 
 function render() {
     const delta = clock.getDelta();
-    time +=  0.1;
+    startTime += 0.1;
+    // camera.rotation.x.value = startTime/1111.;
+    if (startTime > 60) {
+        time +=  startTime/1000;
+        if( camera.position.y < 10){
+            camera.position.y += 0.002 ;
+        }
+    }
+    
+    // time +=  0.1;
+    material.uniforms.u_startTime.value = startTime ;
     sphereMaterial.uniforms.u_time.value = time / 112.;
     sphereMaterial.uniforms.u_resolution = { type: "v2", value: new THREE.Vector2(window.innerWidth * 10, window.innerWidth * 10) };
     material.uniforms.u_time.value = time / 112.;
     material.uniforms.u_resolution = { type: "v2", value: new THREE.Vector2(window.innerWidth * 10, window.innerWidth * 10) };
     const pos = geometry.attributes.position;
 	var waveSize = time/1112.;
+	if(camera.rotation.x > 1.35){
+		sphereMaterial.uniforms.u_scale.value += 0.001;
+	}else if(camera.rotation.x > 0.0){
 
+		sphereMaterial.uniforms.u_scale.value -= 0.001;
+
+	}
+	console.log("Camera Rotation:", );
 	if(waveSize > 1.0) {
 		waveSize = 1.0;
 	}
 
     for (let i = 0; i < pos.count; i++) {
-        const y = 15 * (Math.sin((time / 12 + i / 512)) )*waveSize;
+        var y = 0.0;
+        if (startTime > 60) {
+            y = 0.0;
+        }else{
+            y = 15 * (Math.sin((time / 12 + i / 512)) )*waveSize;
+        }
+         
         pos.setY(i, y - 10*waveSize);
     }
 

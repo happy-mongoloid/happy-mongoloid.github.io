@@ -15,7 +15,7 @@
       // Let's define PI constant
       #define pi 3.1415926535
     float t;
-
+ uniform float u_scale;
 
 
 
@@ -108,8 +108,8 @@ float u_t = u_time*112.;
 float uvMask = smoothstep(0.,.5,uv.y + 0.35);
 noiseCol *= uvMask;
 noiseCol *= bwGrain(uv,u_t*112.);
-noiseCol = smoothstep(0.2,0.3 ,noiseCol);
+noiseCol = smoothstep(0.2,0.3 + u_scale,noiseCol);
 float sun = pow(uv.y,5.)*34.;
-noiseCol -= smoothstep(0.6,0.7,sun);
+noiseCol -= smoothstep(0.6,0.7 + u_scale,sun);
 gl_FragColor = vec4(noiseCol,1.0);
 }

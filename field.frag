@@ -9,7 +9,8 @@
     precision highp float;
     precision mediump int;
     #endif
-      uniform float u_time;
+      uniform float u_time; 
+      uniform float u_startTime;
         uniform vec2 u_resolution;
       varying vec2 fragCoord;
       // Let's define PI constant
@@ -18,14 +19,15 @@
 
 
 
-float glow = 0.01;
+
 float width = 0.0;
 float cellSize = 0.001;
 
 float grid(vec2 uv)
 {
-  float d = length(uv);
-
+  float d = length(uv) ;
+float glow = 0.01;//1.0 - u_startTime/60.;
+      // glow = clamp(glow,-0.,1.0)/12.;
     uv /= cellSize/2.0;
 width += smoothstep(0.0,0.05,d)/3.;
 float dVert = length(fract(uv.x ) - 0.5);
