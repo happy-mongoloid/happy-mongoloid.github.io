@@ -152,7 +152,7 @@ function render() {
 
     for (let i = 0; i < pos.count; i++) {
         var y = 0.0;
-        if (startTime > 60) {
+        if (startTime > 6) {
             y = 0.0;
         }else{
             y = 15 * (Math.sin((time / 12 + i / 512)) )*waveSize;

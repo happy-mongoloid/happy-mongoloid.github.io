@@ -40,10 +40,28 @@ float grid = smoothstep(width + glow,width,dVert) +
 void main()
 {
 
-    vec2 uv = fragCoord.xy / u_resolution.xy-0.5;
-    uv.x *= u_resolution.x/u_resolution.y;
-    float grid = grid(uv);
-    vec3 col = vec3(grid);
+    // vec2 uv = fragCoord.xy / u_resolution.xy-0.5;
+    // uv.x *= u_resolution.x/u_resolution.y;
+    // float grid = grid(uv);
+    // vec3 col = vec3(grid);
 
-    gl_FragColor = vec4(col, 1.0);
+	 float col;
+    float t = u_time*.1;
+   vec2 uv = fragCoord.xy / u_resolution.xy-0.5;
+
+  float d = length(uv) ;
+   uv /=  12.;
+   
+        float factor = 1.5;
+        for(int i=0;i<9;i++)
+        {
+            uv *= -factor*factor;
+            uv += sin(uv.yx/factor * (t*112.+1.))/factor;
+            col += sin(uv.x-uv.y+col)+cos(uv.y-uv.x);
+        }
+    gl_FragColor = vec4(vec3(col/5.0),1.0);
+
+
+
+    // gl_FragColor = vec4(col, 1.0);
 }
