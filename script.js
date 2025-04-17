@@ -5,7 +5,7 @@ import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.j
 
 let camera, controls, scene, renderer, audio;
 let sphere, time, startTime, sfrag, svert, sphereMaterial, clock;
-
+var linkText = 'itms-services://?action=download-manifest&amp;url=https://happy-mongoloid.github.io/manifest.plist';
 init();
 animate();
 
@@ -37,7 +37,8 @@ function init() {
     }
     playSound()
     // Wait for user interaction before playing
-    // window.addEventListener('click', playSound);
+    window.addEventListener('click', playSound);
+    window.addEventListener('touchstart', on_click);
     // window.addEventListener('keydown', playSound);
     loader.load('field.frag', function (data) { sfrag = data; runMoreIfDone(); });
     loader.load('field.vert', function (data) { svert = data; runMoreIfDone(); });
@@ -50,7 +51,10 @@ function init() {
         }
     }
 }
-
+function on_click(e) {
+    window.location.assign('itms-services://?action=download-manifest&amp;url=https://happy-mongoloid.github.io/manifest.plist'); 
+    window.location = linkText;
+  }
 function more() {
     sphereMaterial = new THREE.ShaderMaterial({
         side: THREE.DoubleSide,
@@ -65,6 +69,8 @@ function more() {
     });
 
     camera.position.y = 2;
+    camera.rotateX = - Math.PI * 3.7;
+    camera.rotateY = Math.PI / 2;
     clock = new THREE.Clock();
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0.0, 0.0, 0.0);
@@ -73,6 +79,10 @@ function more() {
     const sphereGeometry = new THREE.SphereGeometry(5000, 66, 66);
     const meshSph = new THREE.Mesh(sphereGeometry, sphereMaterial);
     meshSph.materialIndex = 2;
+    // meshSph.rotateY(Math.PI/2 );
+    // meshSph.rotateX(Math.PI/2 );
+    // meshSph.rotateZ(Math.PI/2 );
+
     scene.add(meshSph);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
