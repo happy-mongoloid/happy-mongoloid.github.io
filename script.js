@@ -14,8 +14,8 @@ function init() {
     startTime = 0.01;
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
-    camera.rotation.y = -0.025;
-    camera.rotation.x = -Math.PI / 2.1 - 0.1;
+    camera.rotation.y = -0.75;
+    // camera.rotation.x = -Math.PI / 2.1 - 0.1;
 
     const audioLoader = new THREE.AudioLoader();
     const loader = new THREE.FileLoader();
@@ -69,8 +69,8 @@ function more() {
     });
 
     camera.position.y = 2;
-    camera.rotateX = - Math.PI * 3.7;
-    camera.rotateY = Math.PI / 2;
+    // camera.rotateX = - Math.PI / 3.7;
+    // camera.rotateY = Math.PI / 2;
     clock = new THREE.Clock();
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0.0, 0.0, 0.0);
