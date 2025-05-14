@@ -31,7 +31,7 @@
 				<key>bundle-identifier</key>
 				<string>co.afterlight.camera</string>
 				<key>bundle-version</key>
-				<string>1.1.6</string>
+				<string>1.1.7</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>platform-identifier</key>
