@@ -1,7 +1,11 @@
-
+#ifdef GL_ES
 precision mediump float;
+#endif
 
-
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform sampler2D logo_texture;
+varying vec2 fragCoord;
 
 // uniform vec3 theme_colors[4];
 
@@ -16,12 +20,8 @@ precision mediump float;
     #endif
     //   uniform float u_time; 
       uniform float u_startTime;
-        uniform vec2 u_resolution;
-      varying vec2 fragCoord;
 
 #define resolution u_resolution
-uniform sampler2D logo_texture;
-uniform float u_time;
 #define session_time u_time
  vec3 theme_color = vec3(0.1,1.0,0.6);
    vec3 theme_colors[4]; 
@@ -113,7 +113,7 @@ float easyInEasyOut(float val){
  //set logo position here
  
  vec3 addRGBLogo(vec3 tintCol,vec3 inColor,vec3 inColor2 ){
-            vec2 logoUV = gl_FragCoord.xy/u_resolution.xy ;
+            vec2 logoUV = fragCoord/u_resolution.xy ;
             //flip logo
             logoUV = 1.0 - logoUV;
             //flip logo X
@@ -150,7 +150,7 @@ float easyInEasyOut(float val){
         return logo*(0.7 + sparkles(logoUV*2.,112.)/3.);
         }
          vec3 addLogo(vec3 tintCol){
-            vec2 logoUV = gl_FragCoord.xy/u_resolution.xy ;
+            vec2 logoUV = fragCoord/u_resolution.xy ;
             //flip logo
             logoUV = 1.0 - logoUV;
             //flip logo X
@@ -297,7 +297,7 @@ vec2 swirl(float phase){
     vec2 center = vec2(0.5);
     center = center == vec2(0., 0.) ? vec2(.5, .5) : center;
     
-    vec2 uv = gl_FragCoord.xy / resolution.xy - center;
+    vec2 uv = fragCoord.xy / resolution.xy - center;
     
     float len = length(uv * vec2(resolution.x / resolution.y, 1.));
     float angle = atan(uv.y, uv.x) + effectAngle * smoothstep(effectRadius, 0., len);
@@ -347,7 +347,7 @@ vec2 sdBezier(vec2 pos, vec2 A, vec2 B, vec2 C)
 
 float phaseDebug(float scale, vec2 pos){
     
-    vec2 uv = (gl_FragCoord.xy / resolution.xy)-pos;
+    vec2 uv = (fragCoord.xy / resolution.xy)-pos;
     uv.x *= resolution.x/resolution.y;
     float d = length(uv);
     d = smoothstep(0.011 + scale,0.01 + scale,d);
@@ -432,7 +432,7 @@ vec3 StarField(vec2 p, float du)
 }
 vec3 stars(){
 float du = 1.0 / resolution.y;
- vec2  uv = du*(gl_FragCoord.xy-0.5*resolution.xy) + 1.33;
+ vec2  uv = du*(fragCoord-0.5*resolution.xy) + 1.33;
  uv.x +=  u_time/130.0;
 uv.x *= resolution.x/resolution.y;
    return StarField(uv/1.1, du);
@@ -509,31 +509,31 @@ uv.x *= resolution.x/resolution.y;
         vec2 c1;
         float t = u_time/2. + pi/2.;
         float linees = 0.0;
-     for(float i = 0.0; i < 22.; i += 1.){
+     for(float i = 0.0; i < 12.; i += 1.){
             // delta = (delta / (1.0 + i/32.)/.);
 
                 float line = 1.2;
                 radius = 0.8;
-                float scale = 0.8;
-                vec2 v1 = vec2(.0,1.75 )*scale;
+                float scale = 0.5;
+                vec2 v1 = (vec2(-1.5,0.0 )*scale).yx;
                 c0 =  line * radius * getLemniscate(  (i ) * (2.2 * delta  ),v1);
                 c1 = line * radius * getLemniscate(  (i + 1.0) * (2.2 * delta ),v1);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
             
-                vec2 v2 = vec2(0.7,mix(.35,.7,phase))*scale;
+                vec2 v2 = vec2(0.7,mix(.35,.7,phase)).yx*scale;
                 c0 =  line * radius * getLemniscate( t + pi*1. + (i ) * (line * delta  ),v2);
                 c1 = line * radius * getLemniscate( t + pi*1. + (i + 1.0) * (line * delta ),v2);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
 
-                vec2 v3 = vec2(.5,mix(.25,0.5,phase))*scale;
+                vec2 v3 = vec2(.5,mix(.25,0.5,phase)).yx*scale;
                 c0 =  line * radius * getLemniscate( t + pi*.5 + (i ) * (line * delta  ),v3);
                 c1 = line * radius * getLemniscate( t + pi*.5 + (i + 1.0) * (line * delta ),v3);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
-                 vec2 v4 = vec2(.25,mix(.125,0.25,phase))*scale;
+                 vec2 v4 = vec2(.25,mix(.125,0.25,phase)).yx*scale;
                 c0 =  line * radius * getLemniscate( t + pi*1.25 + (i ) * (line * delta  ),v4);
                 c1 = line * radius * getLemniscate( t + pi*1.25 + (i + 1.0) * (line * delta ),v4);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
-                vec2 v5 = vec2(.15,mix(.075,0.15,phase))*scale;
+                vec2 v5 = vec2(.15,mix(.075,0.15,phase)).yx*scale;
                 c0 =  line * radius * getLemniscate( t + pi*2.25 + (i ) * (line * delta  ),v5);
                 c1 = line * radius * getLemniscate( t + pi*2.25 + (i + 1.0) * (line * delta ),v5);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
@@ -545,55 +545,30 @@ uv.x *= resolution.x/resolution.y;
         
         d1 = smoothstep(-0.0, 1.5, d1);
         d2 = smoothstep(-0.0, 1.5, d2);
-        return (d1+d2)*sparkles(uv*52.,u_time/12.);
+        return (d1+d2)*sparkles(uv*52.,u_time/12.)/2. + (d1+d2)/2.;
     }
 
     void main()
     {
-        // THEME_COLORS
-        vec2 uv = gl_FragCoord.xy/resolution.xy ;
+        vec2 uv = fragCoord/resolution.xy;
         uv -= 0.5;
 
-
-
-        if(resolution.x<resolution.y) {
-                    uv.y *= resolution.y/resolution.x;
-                    // logoUV *= 9.0;
-                }else{
-                    uv.x *= resolution.x/resolution.y;
-                    // logoUV *= 9.0;
-                }
-                uv /= 16.6;
+        if(resolution.x < resolution.y) {
+            uv.y *= resolution.y/resolution.x;
+        } else {
+            uv.x *= resolution.x/resolution.y;
+        }
+        uv /= 16.6;
+        
         vec3 col = vec3(0.);
+        uv = uv.yx;
+        uv *= 1.6;
         
-
-    
-    //set the circle scale
-        uv = uv.yx ;
-    //set animation scale
-    //   breathValue /= 17.;
-    
-    // col += rings(uv, theme_color, breathValue ,phasor_whole,talk_value);
+        float shape = lemniscate(uv, 0.0, u_time) * 4.;
+        vec3 inColor = vec3(0.7255, 0.8745, 1.0);
         
+        col = inColor * shape;
+        col += addLogo(inColor + 0.2);
         
-
-        
-        float phase = 0.0;
-        
-        
-        uv *= 1.6 ;
-        
-        float shape = lemniscate(uv, phase,u_time  )*4.;
-     
-        vec3 inColor = vec3(0.7255, 0.8745, 1.0); 
-        
-       
-            col = inColor * shape;
-            col += addLogo(inColor + 0.2);
-
-        
-            
-
-
-            gl_FragColor = vec4(col, 1.0);
+        gl_FragColor = vec4(col, 1.0);
     }
