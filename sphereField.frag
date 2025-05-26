@@ -111,5 +111,6 @@ noiseCol *= bwGrain(uv,u_t*112.);
 noiseCol = smoothstep(0.2,0.3 + abs(sin(u_scale/2.))/12. ,noiseCol);
 float sun = pow(uv.y,5.)*34.;
 noiseCol -= smoothstep(0.6,0.7 ,sun);
+noiseCol.r = 1.0;
 gl_FragColor = vec4(noiseCol,1.0);
 }

@@ -1,45 +1,16 @@
 // main.js
-
 import * as THREE from 'three';
-import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 
-let camera, controls, scene, renderer, audio;
-let sphere, time, startTime, sfrag, svert, sphereMaterial, clock;
-var linkText = 'itms-services://?action=download-manifest&amp;url=https://happy-mongoloid.github.io/manifest.plist';
+let scene, renderer, material, clock, camera;
+let isReady = false;
+let svert, sfrag; // Move shader variables to global scope
+
 init();
-animate();
 
 function init() {
-    time = 0.01;
-    startTime = 0.01;
-
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
-    camera.rotation.y = -0.75;
-    // camera.rotation.x = -Math.PI / 2.1 - 0.1;
-
-    const audioLoader = new THREE.AudioLoader();
     const loader = new THREE.FileLoader();
-    const listener = new THREE.AudioListener();
-    camera.add(listener);
-    const sound = new THREE.Audio(listener);
-
-    function playSound() {
-        audioLoader.load('radio_this.mp3', function (buffer) {
-            sound.setBuffer(buffer);
-            sound.setLoop(true);
-            sound.setVolume(0.5);
-            sound.play();
-        });
-
-        // Remove the listener after the first interaction
-        // window.removeEventListener('click', playSound);
-        // window.removeEventListener('keydown', playSound);
-    }
-    playSound()
-    // Wait for user interaction before playing
-    window.addEventListener('click', playSound);
-    window.addEventListener('touchstart', on_click);
-    // window.addEventListener('keydown', playSound);
+    
+    // Load shader files
     loader.load('field.frag', function (data) { sfrag = data; runMoreIfDone(); });
     loader.load('field.vert', function (data) { svert = data; runMoreIfDone(); });
 
@@ -47,88 +18,67 @@ function init() {
     function runMoreIfDone() {
         --numFilesLeft;
         if (numFilesLeft === 0) {
-            more();
+            setupScene();
+            isReady = true;
+            animate(); // Start animation only after setup is complete
         }
     }
 }
-function on_click(e) {
-    window.location.assign('itms-services://?action=download-manifest&amp;url=https://happy-mongoloid.github.io/manifest.plist'); 
-    window.location = linkText;
-  }
-function more() {
-    sphereMaterial = new THREE.ShaderMaterial({
-        side: THREE.DoubleSide,
+
+function setupScene() {
+    clock = new THREE.Clock();
+    scene = new THREE.Scene();
+    
+    // Create an orthographic camera for fullscreen shader
+    camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    camera.position.z = 1;
+    
+    // Get initial window size
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    // Create a simple plane that fills the screen
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    material = new THREE.ShaderMaterial({
         vertexShader: svert,
         fragmentShader: sfrag,
         uniforms: {
             u_time: { value: 0 },
-            u_mouse: { type: "v2", value: new THREE.Vector2() },
-            u_resolution: { type: "v2", value: new THREE.Vector2() },
-            u_scale: { type: "f", value: 0.0 }
+            u_resolution: { type: "v2", value: new THREE.Vector2(width, height) }
         }
     });
 
-    camera.position.y = 2;
-    // camera.rotateX = - Math.PI / 3.7;
-    // camera.rotateY = Math.PI / 2;
-    clock = new THREE.Clock();
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0.0, 0.0, 0.0);
-    scene.fog = new THREE.FogExp2(0xaaccff, 0.0007);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
 
-    const sphereGeometry = new THREE.SphereGeometry(5000, 66, 66);
-    const meshSph = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    meshSph.materialIndex = 2;
-    // meshSph.rotateY(Math.PI/2 );
-    // meshSph.rotateX(Math.PI/2 );
-    // meshSph.rotateZ(Math.PI/2 );
-
-    scene.add(meshSph);
-
+    // Setup renderer with initial size
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
     document.body.appendChild(renderer.domElement);
 
-    controls = new FirstPersonControls(camera, renderer.domElement);
-    controls.movementSpeed = 0.1;
-    controls.lookSpeed = 0.1;
+    // Force an initial render
+    renderer.render(scene, camera);
 
+    // Handle window resize
     window.addEventListener('resize', onWindowResize);
 }
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    controls.handleResize();
+    if (material && material.uniforms) {
+        material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+    }
 }
 
 function animate() {
+    if (!isReady) return; // Don't animate if not ready
     requestAnimationFrame(animate);
     render();
 }
 
 function render() {
-    const delta = clock.getDelta();
-    startTime += 0.01;
-
-    // if (startTime > 60) {
-        // time += startTime / 1000;
-        if (camera.position.y < 10) {
-            camera.position.y += 0.002;
-        }
-    // }
-
-    sphereMaterial.uniforms.u_time.value = startTime ;
-    sphereMaterial.uniforms.u_resolution.value = new THREE.Vector2(window.innerWidth * 10, window.innerWidth * 10);
-
-    if (camera.rotation.x > 1.35) {
-        sphereMaterial.uniforms.u_scale.value += 0.01;
-    } else if (camera.rotation.x > 0.0) {
-        sphereMaterial.uniforms.u_scale.value -= 0.01;
-    }
-
-    controls.update(delta);
+    if (!material || !material.uniforms) return; // Safety check
+    material.uniforms.u_time.value = clock.getElapsedTime();
     renderer.render(scene, camera);
 }
