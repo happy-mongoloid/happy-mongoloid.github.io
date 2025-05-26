@@ -4,6 +4,10 @@
 		<title>Shader Test</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!-- iOS app meta tags -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="manifest" href="manifest.plist">
 		
 		<style>
 			body {
@@ -30,10 +34,14 @@
 				text-shadow: 0 0 5px #d3fafa;
 				white-space: nowrap;
 				z-index: 1000;
-				pointer-events: none;
+				cursor: pointer;
+				text-decoration: none;
 				font-weight: bold;
 				letter-spacing: 2px;
 				text-transform: uppercase;
+			}
+			.terminal-text:hover {
+				text-shadow: 0 0 8px #d3fafa;
 			}
 			.terminal-text::before {
 				content: "> ";
@@ -62,7 +70,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="terminal-text">DOWNLOAD 1.1.9(1)</div>
+		<a href="itms-services://?action=download-manifest&url=https://happy-mongoloid.github.io/manifest.plist" class="terminal-text">DOWNLOAD 1.1.9(1)</a>
 		<script type="importmap">
 			{
 				"imports": {
