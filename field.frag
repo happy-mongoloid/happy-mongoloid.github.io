@@ -514,7 +514,7 @@ uv.x *= resolution.x/resolution.y;
 
                 float line = 1.2;
                 radius = 0.8;
-                float scale = 0.5;
+                float scale = 0.3;
                 uv.y -= 0.25;
                 uv.x -= 0.01;
                 vec2 v1 = (vec2(-1.25,0.0 )*scale).yx;
