@@ -515,19 +515,22 @@ uv.x *= resolution.x/resolution.y;
                 float line = 1.2;
                 radius = 0.8;
                 float scale = 0.5;
-                vec2 v1 = (vec2(-1.5,0.0 )*scale).yx;
+                uv.y -= 0.25;
+                uv.x -= 0.01;
+                vec2 v1 = (vec2(-1.25,0.0 )*scale).yx;
                 c0 =  line * radius * getLemniscate(  (i ) * (2.2 * delta  ),v1);
                 c1 = line * radius * getLemniscate(  (i + 1.0) * (2.2 * delta ),v1);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
-            
-                vec2 v2 = vec2(0.7,mix(.35,.7,phase)).yx*scale;
-                c0 =  line * radius * getLemniscate( t + pi*1. + (i ) * (line * delta  ),v2);
-                c1 = line * radius * getLemniscate( t + pi*1. + (i + 1.0) * (line * delta ),v2);
+                uv.y += 0.25;
+                uv.x += 0.01;
+                vec2 v2 = vec2(0.5,mix(.25,.7,phase)).yx*scale;
+                c0 =  line * radius * getLemniscate( t + pi/2. + (i ) * (line * delta*1.5  ),v2);
+                c1 = line * radius * getLemniscate( t + pi/2. + (i + 1.0) * (line * delta*1.5 ),v2);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
 
                 vec2 v3 = vec2(.5,mix(.25,0.5,phase)).yx*scale;
-                c0 =  line * radius * getLemniscate( t + pi*.5 + (i ) * (line * delta  ),v3);
-                c1 = line * radius * getLemniscate( t + pi*.5 + (i + 1.0) * (line * delta ),v3);
+                c0 =  line * radius * getLemniscate( t - pi*.5 + (i ) * (line * delta  ),v3);
+                c1 = line * radius * getLemniscate( t - pi*.5 + (i + 1.0) * (line * delta ),v3);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
                  vec2 v4 = vec2(.25,mix(.125,0.25,phase)).yx*scale;
                 c0 =  line * radius * getLemniscate( t + pi*1.25 + (i ) * (line * delta  ),v4);
@@ -553,11 +556,11 @@ uv.x *= resolution.x/resolution.y;
         vec2 uv = fragCoord/resolution.xy;
         uv -= 0.5;
 
-        if(resolution.x < resolution.y) {
-            uv.y *= resolution.y/resolution.x;
-        } else {
-            uv.x *= resolution.x/resolution.y;
-        }
+        // if(resolution.x < resolution.y) {
+        //     uv.y *= resolution.y/resolution.x;
+        // } else {
+            uv.x /= resolution.y/resolution.x;
+        // }
         uv /= 16.6;
         
         vec3 col = vec3(0.);
