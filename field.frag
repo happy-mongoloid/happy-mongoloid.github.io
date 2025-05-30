@@ -509,34 +509,36 @@ uv.x *= resolution.x/resolution.y;
         vec2 c1;
         float t = u_time/2. + pi/2.;
         float linees = 0.0;
-     for(float i = 0.0; i < 12.; i += 1.){
+     for(float i = 0.0; i < 16.; i += 1.){
             // delta = (delta / (1.0 + i/32.)/.);
 
                 float line = 1.2;
                 radius = 0.8;
-                float scale = 0.3;
+                vec2 scale = hash12(i); 
+                // scale.y *= 0.5;
+                scale.y = clamp(scale.y,0.0,.5);
                 uv.y -= 0.25;
                 uv.x -= 0.01;
-                vec2 v1 = (vec2(-1.25,0.0 )*scale).yx;
+                vec2 v1 = (vec2(-1.25,0.0 )*scale);
                 c0 =  line * radius * getLemniscate(  (i ) * (2.2 * delta  ),v1);
                 c1 = line * radius * getLemniscate(  (i + 1.0) * (2.2 * delta ),v1);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
                 uv.y += 0.25;
                 uv.x += 0.01;
-                vec2 v2 = vec2(0.5,mix(.25,.7,phase)).yx*scale;
+                vec2 v2 = vec2(0.5,mix(.25,.7,phase))*scale;
                 c0 =  line * radius * getLemniscate( t + pi/2. + (i ) * (line * delta*1.5  ),v2);
                 c1 = line * radius * getLemniscate( t + pi/2. + (i + 1.0) * (line * delta*1.5 ),v2);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
 
-                vec2 v3 = vec2(.5,mix(.25,0.5,phase)).yx*scale;
+                vec2 v3 = vec2(.5,mix(.25,0.5,phase))*scale;
                 c0 =  line * radius * getLemniscate( t - pi*.5 + (i ) * (line * delta  ),v3);
                 c1 = line * radius * getLemniscate( t - pi*.5 + (i + 1.0) * (line * delta ),v3);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
-                 vec2 v4 = vec2(.25,mix(.125,0.25,phase)).yx*scale;
+                 vec2 v4 = vec2(.25,mix(.125,0.25,phase))*scale;
                 c0 =  line * radius * getLemniscate( t + pi*1.25 + (i ) * (line * delta  ),v4);
                 c1 = line * radius * getLemniscate( t + pi*1.25 + (i + 1.0) * (line * delta ),v4);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
-                vec2 v5 = vec2(.15,mix(.075,0.15,phase)).yx*scale;
+                vec2 v5 = vec2(.15,mix(.075,0.15,phase))*scale;
                 c0 =  line * radius * getLemniscate( t + pi*2.25 + (i ) * (line * delta  ),v5);
                 c1 = line * radius * getLemniscate( t + pi*2.25 + (i + 1.0) * (line * delta ),v5);
                 angle += signedAngle(c0-uv, c1-uv)/2.;
@@ -571,7 +573,10 @@ uv.x *= resolution.x/resolution.y;
         vec3 inColor = vec3(0.7255, 0.8745, 1.0);
         
         col = inColor * shape;
-        col += addLogo(inColor + 0.2);
-        
+        // col += addLogo(inColor + 0.2);
+        uv.x *= 2.0;
+        float d = length(uv );
+        d = smoothstep(0.0,0.1,d);
+        col += (d*inColor*sparkles(uv*52.,u_time/12.)/2. + d*inColor/2.)/3.;
         gl_FragColor = vec4(col, 1.0);
     }
