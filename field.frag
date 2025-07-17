@@ -509,7 +509,7 @@ uv.x *= resolution.x/resolution.y;
         vec2 c1;
         float t = u_time/2. + pi/2.;
         float linees = 0.0;
-     for(float i = 0.0; i < 16.; i += 1.){
+     for(float i = 0.0; i < 6.; i += 1.){
             // delta = (delta / (1.0 + i/32.)/.);
 
                 float line = 1.2;
