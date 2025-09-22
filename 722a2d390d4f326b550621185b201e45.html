@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Shader Test</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!-- iOS app meta tags -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="manifest" href="manifest.plist">
+		
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				font-family: 'Courier New', monospace;
+			}
+			canvas {
+				width: 100vw;
+				height: 100vh;
+				display: block;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.terminal-text {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-family: 'Courier New', monospace;
+				color: #d3fafa;
+				font-size: min(3vw, 1.2rem);
+				text-shadow: 0 0 5px #d3fafa;
+				white-space: nowrap;
+				z-index: 1000;
+				cursor: pointer;
+				text-decoration: none;
+				font-weight: bold;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+			}
+			.terminal-text:hover {
+				text-shadow: 0 0 8px #d3fafa;
+			}
+			.terminal-text::before {
+				content: "> ";
+				color: #d3fafa;
+			}
+			.terminal-text::after {
+				content: "_";
+				animation: blink 1s infinite;
+				margin-left: 0.2em;
+			}
+			@keyframes blink {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0; }
+			}
+			/* Media queries for fine-tuning */
+			@media (max-width: 768px) {
+				.terminal-text {
+					font-size: min(4vw, 1rem);
+				}
+			}
+			@media (min-width: 1920px) {
+				.terminal-text {
+					font-size: min(2.5vw, 1.5rem);
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<a href="itms-services://?action=download-manifest&url=https://happy-mongoloid.github.io/manifest.plist" class="terminal-text">DOWNLOAD 1.2.2(1)</a>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+				}
+			}
+		</script>
+		<script type="module" src="script.js"></script>
+	</body>
+</html>
